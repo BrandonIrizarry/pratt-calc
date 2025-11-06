@@ -4,7 +4,7 @@ from collections.abc import Callable
 
 class Precedence(enum.IntEnum):
     EOF = enum.auto()
-    NONE = enum.auto()
+    LITERAL = enum.auto()
     PLUS_MINUS = enum.auto()
     TIMES_DIVIDE = enum.auto()
     POWER = enum.auto()
@@ -17,7 +17,10 @@ type Token = int | str
 def precedence(token: Token) -> Precedence:
     match token:
         case int():
-            return Precedence.NONE
+            return Precedence.LITERAL
+
+        case "+":
+            return Precedence.PLUS_MINUS
 
         case "eof":
             return Precedence.EOF
@@ -31,27 +34,31 @@ def nud(token: Token) -> Callable[[], int]:
         case int() as num:
             return lambda: num
 
-        case _:
+        case _ as token:
             raise ValueError(f"No nud for '{token}'")
 
 
-def led(token: Token) -> Callable[[int], int]:
+def led(token: Token, tokens: list[Token]) -> Callable[[int], int]:
     match token:
         case "eof":
             return lambda left: left
 
-        case _:
+        case "+":
+            return lambda left: left + expression(tokens, Precedence.PLUS_MINUS)
+
+        case _ as token:
             raise ValueError(f"No led for '{token}")
 
 
-def expression(tokens: list[Token], level: int) -> float:
+def expression(tokens: list[Token], level: int) -> int:
     assert len(tokens) > 1
+    head, *tokens = tokens
 
-    h1, h2, *rest = tokens
-    value = nud(h1)()
+    value = nud(head)()
 
-    while level < precedence(h2):
-        value = led(h2)(value)
+    while level < precedence(tokens[0]):
+        head, *tokens = tokens
+        value = led(head, tokens)(value)
 
     return value
 
@@ -62,11 +69,14 @@ def expression(tokens: list[Token], level: int) -> float:
 # evaluating to itself, and one with a led action of returning its
 # left argument only, and has the lowest binding precedence of all
 # tokens.
-t1: list[Token] = [3, "eof"]
 
 # Using Precedence.EOF as the starting value of 'level' indicates that
 # this is the "primary" level, and by extension the "ground" level for
 # expressions.
-value = expression(t1, Precedence.EOF)
+
+# then let's see how expressions with addition are handled.
+t2: list[Token] = [3, "+", 4, "eof"]
+
+value = expression(t2, Precedence.EOF)
 
 print(value)
