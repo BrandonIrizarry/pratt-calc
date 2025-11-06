@@ -19,6 +19,6 @@ examples = [
 
 @pytest.mark.parametrize("tokens, value", examples)
 def test_examples(tokens: list[Token], value: int):
-    result, _ = expression(tokens, 0, 0, Precedence.EOF)
+    result, _ = expression(tokens, 0, Precedence.EOF)
 
     assert result == value

@@ -40,7 +40,7 @@ def precedence(token: Token) -> Precedence:
             raise ValueError(f"Invalid token: '{token}'")
 
 
-def expression(tokens: list[Token], i: int, acc: int, level: int) -> tuple[int, int]:
+def expression(tokens: list[Token], i: int, level: int) -> tuple[int, int]:
     # NUD
     match tokens[i]:
         case int() as num:
@@ -48,11 +48,11 @@ def expression(tokens: list[Token], i: int, acc: int, level: int) -> tuple[int, 
             i += 1
 
         case "-":
-            value, i = expression(tokens, i + 1, acc, Precedence.UNARY)
+            value, i = expression(tokens, i + 1, Precedence.UNARY)
             acc = -value
 
         case "(":
-            value, i = expression(tokens, i + 1, acc, Precedence.PARENS)
+            value, i = expression(tokens, i + 1, Precedence.PARENS)
             assert tokens[i] == ")"
             acc = value
 
@@ -67,20 +67,20 @@ def expression(tokens: list[Token], i: int, acc: int, level: int) -> tuple[int, 
         # LED
         match tokens[i]:
             case "+":
-                value, i = expression(tokens, i + 1, acc, Precedence.PLUS_MINUS)
+                value, i = expression(tokens, i + 1, Precedence.PLUS_MINUS)
                 acc += value
 
             case "-":
-                value, i = expression(tokens, i + 1, acc, Precedence.PLUS_MINUS)
+                value, i = expression(tokens, i + 1, Precedence.PLUS_MINUS)
                 acc -= value
 
             case "*":
-                value, i = expression(tokens, i + 1, acc, Precedence.TIMES_DIVIDE)
+                value, i = expression(tokens, i + 1, Precedence.TIMES_DIVIDE)
                 acc *= value
 
             case "^":
                 # Enforce right-association.
-                value, i = expression(tokens, i + 1, acc, Precedence.POWER - 1)
+                value, i = expression(tokens, i + 1, Precedence.POWER - 1)
 
                 prod = 1
 
