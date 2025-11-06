@@ -1,5 +1,4 @@
 import enum
-from collections.abc import Callable
 
 
 class Precedence(enum.IntEnum):
@@ -29,38 +28,30 @@ def precedence(token: Token) -> Precedence:
             raise ValueError(f"Invalid token: '{token}'")
 
 
-def nud(token: Token) -> Callable[[], int]:
-    match token:
+def expression(tokens: list[Token], i: int, acc: int, level: int) -> tuple[int, int]:
+    # NUD
+    match tokens[i]:
         case int() as num:
-            return lambda: num
+            acc = num
+            i += 1
 
         case _ as token:
-            raise ValueError(f"No nud for '{token}'")
+            raise ValueError(f"nud: {token}")
 
+    while level < precedence(tokens[i]):
+        # LED
+        match tokens[i]:
+            case "+":
+                value, i = expression(tokens, i + 1, acc, Precedence.PLUS_MINUS)
+                acc += value
 
-def led(token: Token, tokens: list[Token]) -> Callable[[int], int]:
-    match token:
-        case "eof":
-            return lambda left: left
+            case "eof":
+                pass
 
-        case "+":
-            return lambda left: left + expression(tokens, Precedence.PLUS_MINUS)
+            case _ as token:
+                raise ValueError(f"led: {token}")
 
-        case _ as token:
-            raise ValueError(f"No led for '{token}")
-
-
-def expression(tokens: list[Token], level: int) -> int:
-    assert len(tokens) > 1
-    head, *tokens = tokens
-
-    value = nud(head)()
-
-    while level < precedence(tokens[0]):
-        head, *tokens = tokens
-        value = led(head, tokens)(value)
-
-    return value
+    return acc, i
 
 
 # The goal is to first parse/evaluate single-number expressions.
@@ -77,6 +68,6 @@ def expression(tokens: list[Token], level: int) -> int:
 # then let's see how expressions with addition are handled.
 t2: list[Token] = [3, "+", 4, "eof"]
 
-value = expression(t2, Precedence.EOF)
+value = expression(t2, 0, 0, Precedence.EOF)
 
 print(value)
