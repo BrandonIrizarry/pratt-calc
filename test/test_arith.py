@@ -2,7 +2,12 @@ import pytest
 
 from minimal_pratt.main import Precedence, Token, expression
 
-examples = [([3, "eof"], 3), ([0, "eof"], 0), ([3, "+", 4, "eof"], 7)]
+examples = [
+    ([3, "eof"], 3),
+    ([0, "eof"], 0),
+    ([3, "+", 4, "eof"], 7),
+    ([3, "+", 4, "*", 5, "+", 6, "eof"], 29),
+]
 
 
 @pytest.mark.parametrize("tokens, value", examples)
