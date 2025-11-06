@@ -38,6 +38,10 @@ def expression(tokens: list[Token], i: int, acc: int, level: int) -> tuple[int, 
             acc = num
             i += 1
 
+        case "-":
+            value, i = expression(tokens, i + 1, acc, Precedence.UNARY)
+            acc = -value
+
         case _ as token:
             raise ValueError(f"nud: {token}")
 
@@ -61,7 +65,7 @@ def expression(tokens: list[Token], i: int, acc: int, level: int) -> tuple[int, 
     return acc, i
 
 
-t2: list[Token] = [3, "+", 4, "*", 5, "+", 6, "eof"]
+t2: list[Token] = [3, "+", "-", 4, "*", 5, "+", 6, "eof"]
 
 value = expression(t2, 0, 0, Precedence.EOF)
 
