@@ -53,75 +53,71 @@ def precedence(token: Token) -> Precedence:
             raise ValueError(f"Invalid token: '{token}'")
 
 
-def expression(stream: Stream, level: int) -> tuple[int, Stream]:
-    # NUD
-    current = next(stream)
+class Parser:
+    def __init__(self, tokens: list[Token]):
+        self.stream: peekable[Token] = peekable(tokens)
 
-    match current:
-        case int() as num:
-            acc = num
+    def expression(self, level: int = Precedence.EOF) -> int:
+        # NUD
+        current = next(self.stream)
 
-        case "-":
-            value, stream = expression(stream, Precedence.UNARY)
-            acc = -value
-
-        case "(":
-            value, stream = expression(stream, Precedence.PARENS)
-            assert stream.peek() == ")"
-            acc = value
-
-            # We don't drive parsing/evaluation with right-paren, so
-            # skip it.
-            _ = next(stream)
-
-        case _ as token:
-            raise ValueError(f"nud: {token}")
-
-    while level < precedence(stream.peek()):
-        current = next(stream)
-
-        # LED
         match current:
-            case "+":
-                value, stream = expression(stream, Precedence.PLUS_MINUS)
-                acc += value
+            case int() as num:
+                acc = num
 
             case "-":
-                value, stream = expression(stream, Precedence.PLUS_MINUS)
-                acc -= value
+                value = self.expression(Precedence.UNARY)
+                acc = -value
 
-            case "*":
-                value, stream = expression(stream, Precedence.TIMES_DIVIDE)
-                acc *= value
+            case "(":
+                value = self.expression(Precedence.PARENS)
+                assert self.stream.peek() == ")"
+                acc = value
 
-            case "^":
-                # Enforce right-association.
-                value, stream = expression(stream, Precedence.POWER - 1)
-
-                prod = 1
-
-                for _ in range(value):
-                    prod *= acc
-
-                acc = prod
-
-            case "!":
-                prod = 1
-
-                for j in range(1, acc + 1):
-                    prod *= j
-
-                acc = prod
+                # We don't drive parsing/evaluation with right-paren, so
+                # skip it.
+                _ = next(self.stream)
 
             case _ as token:
-                raise ValueError(f"led: {token}")
+                raise ValueError(f"nud: {token}")
 
-    return acc, stream
+        while level < precedence(self.stream.peek()):
+            current = next(self.stream)
 
+            # LED
+            match current:
+                case "+":
+                    value = self.expression(Precedence.PLUS_MINUS)
+                    acc += value
 
-def expression_top(tokens: list[Token]) -> int:
-    stream = peekable(tokens)
+                case "-":
+                    value = self.expression(Precedence.PLUS_MINUS)
+                    acc -= value
 
-    value, _ = expression(stream, Precedence.EOF)
+                case "*":
+                    value = self.expression(Precedence.TIMES_DIVIDE)
+                    acc *= value
 
-    return value
+                case "^":
+                    # Enforce right-association.
+                    value = self.expression(Precedence.POWER - 1)
+
+                    prod = 1
+
+                    for _ in range(value):
+                        prod *= acc
+
+                    acc = prod
+
+                case "!":
+                    prod = 1
+
+                    for j in range(1, acc + 1):
+                        prod *= j
+
+                    acc = prod
+
+                case _ as token:
+                    raise ValueError(f"led: {token}")
+
+        return acc
