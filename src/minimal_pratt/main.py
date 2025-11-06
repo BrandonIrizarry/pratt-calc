@@ -27,6 +27,9 @@ def precedence(token: Token) -> Precedence:
         case "*":
             return Precedence.TIMES_DIVIDE
 
+        case "^":
+            return Precedence.POWER
+
         case "eof":
             return Precedence.EOF
 
@@ -68,6 +71,16 @@ def expression(tokens: list[Token], i: int, acc: int, level: int) -> tuple[int, 
                 value, i = expression(tokens, i + 1, acc, Precedence.TIMES_DIVIDE)
                 acc *= value
 
+            case "^":
+                value, i = expression(tokens, i + 1, acc, Precedence.POWER)
+
+                prod = 1
+
+                for _ in range(value):
+                    prod *= acc
+
+                acc = prod
+
             case "eof":
                 pass
 
@@ -77,7 +90,7 @@ def expression(tokens: list[Token], i: int, acc: int, level: int) -> tuple[int, 
     return acc, i
 
 
-t2: list[Token] = ["(", 3, "+", "-", 4, ")", "*", 5, "+", 6, "eof"]
+t2: list[Token] = [2, "^", 3, "^", 2, "eof"]
 
 value = expression(t2, 0, 0, Precedence.EOF)
 
