@@ -54,6 +54,18 @@ def precedence(token: Token) -> Precedence:
 
 
 class Parser:
+    """Pratt-parse a list of tokens.
+
+    The tokens are converted internally into a more_itertools
+    'peekable' object, basically a generator.
+
+    This class enables us to encapsulate the stream as global state
+    usable across recursive calls to 'expression', freeing us from
+    having to return the stream (or any kind of placeholder state, for
+    that matter) after each such recursive call.
+
+    """
+
     def __init__(self, tokens: list[Token]):
         self.stream: peekable[Token] = peekable(tokens)
 
