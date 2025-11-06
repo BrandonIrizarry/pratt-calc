@@ -66,13 +66,11 @@ class Parser:
                 acc = num
 
             case "-":
-                value = self.expression(Precedence.UNARY)
-                acc = -value
+                acc = -self.expression(Precedence.UNARY)
 
             case "(":
-                value = self.expression(Precedence.PARENS)
+                acc = self.expression(Precedence.PARENS)
                 assert self.stream.peek() == ")"
-                acc = value
 
                 # We don't drive parsing/evaluation with right-paren, so
                 # skip it.
@@ -87,16 +85,13 @@ class Parser:
             # LED
             match current:
                 case "+":
-                    value = self.expression(Precedence.PLUS_MINUS)
-                    acc += value
+                    acc += self.expression(Precedence.PLUS_MINUS)
 
                 case "-":
-                    value = self.expression(Precedence.PLUS_MINUS)
-                    acc -= value
+                    acc -= self.expression(Precedence.PLUS_MINUS)
 
                 case "*":
-                    value = self.expression(Precedence.TIMES_DIVIDE)
-                    acc *= value
+                    acc *= self.expression(Precedence.TIMES_DIVIDE)
 
                 case "^":
                     # Enforce right-association.
