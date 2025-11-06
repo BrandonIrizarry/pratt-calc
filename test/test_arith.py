@@ -1,15 +1,15 @@
 import pytest
 
-from minimal_pratt.main import parse
+from minimal_pratt.main import Precedence, Token, expression
 
 examples = [
-    ("3 * (2 + -4) ^ 4", 48),
-    ("3", 3),
+    ([3, "eof"], 3),
+    ([0, "eof"], 0),
 ]
 
 
-@pytest.mark.parametrize("expr, value", examples)
-def test_examples(expr: str, value: int):
-    result = parse(expr)
+@pytest.mark.parametrize("tokens, value", examples)
+def test_examples(tokens: list[Token], value: int):
+    result = expression(tokens, Precedence.EOF)
 
     assert result == value
