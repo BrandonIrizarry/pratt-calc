@@ -16,7 +16,7 @@ type Token = int | str
 def precedence(token: Token) -> Precedence:
     # It looks like only potential led-tokens need to appear in this
     # match statement ("potential", meaning that they get checked in
-    # the 'expression' while-loop condition.)
+    # the while-loop condition.)
     match token:
         case ")":
             return Precedence.PARENS
