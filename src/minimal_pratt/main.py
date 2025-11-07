@@ -7,7 +7,6 @@ from more_itertools import peekable
 
 
 class Precedence(enum.IntEnum):
-    EOF = enum.auto()
     PARENS = enum.auto()
     PLUS_MINUS = enum.auto()
     TIMES_DIVIDE = enum.auto()
@@ -48,7 +47,7 @@ def precedence(token: Token) -> Precedence:
             return Precedence.FACTORIAL
 
         case "eof":
-            return Precedence.EOF
+            return Precedence.PARENS
 
         case _:
             raise ValueError(f"Invalid token: '{token}'")
@@ -70,7 +69,7 @@ class Parser:
     def __init__(self, tokens: list[Token]):
         self.stream: peekable[Token] = peekable(tokens)
 
-    def expression(self, level: int = Precedence.EOF) -> int:
+    def expression(self, level: int = Precedence.PARENS) -> int:
         # NUD
         current = next(self.stream)
 
