@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import enum
 import math
+from typing import final
 
-from more_itertools import peekable
+from minimal_pratt.tokenizer import Stream, Token
 
 
 class Precedence(enum.IntEnum):
@@ -13,14 +14,6 @@ class Precedence(enum.IntEnum):
     POWER = enum.auto()
     UNARY = enum.auto()
     FACTORIAL = enum.auto()
-
-
-# Since this definition has been known to change periodically, it's
-# better to keep a fixed alias for this.
-type Token = int | str
-
-# Mostly to keep line lengths shorter.
-type Stream = peekable[Token]
 
 
 def precedence(token: Token) -> Precedence:
@@ -53,6 +46,7 @@ def precedence(token: Token) -> Precedence:
             raise ValueError(f"Invalid token: '{token}'")
 
 
+@final
 class Parser:
     """Pratt-parse a list of tokens.
 
@@ -66,8 +60,8 @@ class Parser:
 
     """
 
-    def __init__(self, tokens: list[Token]):
-        self.stream: peekable[Token] = peekable(tokens)
+    def __init__(self, stream: Stream):
+        self.stream = stream
 
     def expression(self, level: int = Precedence.NONE) -> int:
         # NUD
