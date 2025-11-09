@@ -9,10 +9,13 @@ def _console(fn: Callable[[str], int]):
     """A wrapper to handle console I/O administrivia."""
 
     def wrapper(inp: str | None) -> int:
-        if inp is None:
-            value = fn(sys.argv[1])
-        else:
-            value = fn(inp)
+        """Tests expect INP as a string.
+
+        Production expects INP to come from the console.
+
+        """
+
+        value = fn(sys.argv[1] if inp is None else inp)
 
         print(value)
 
