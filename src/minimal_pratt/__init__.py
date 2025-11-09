@@ -8,10 +8,15 @@ from minimal_pratt.tokenizer import tokenize
 def _console(fn: Callable[[str], int]):
     """A wrapper to handle console I/O administrivia."""
 
-    def wrapper():
-        value = fn(sys.argv[1])
+    def wrapper(inp: str | None) -> int:
+        if inp is None:
+            value = fn(sys.argv[1])
+        else:
+            value = fn(inp)
 
         print(value)
+
+        return value
 
     return wrapper
 
