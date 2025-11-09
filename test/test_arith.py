@@ -28,6 +28,7 @@ def test_examples(raw_expression: str, value: int):
 bad_examples = [
     "?",
     "(3",
+    "()",
 ]
 
 
