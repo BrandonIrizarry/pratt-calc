@@ -3,15 +3,15 @@ from collections.abc import Callable, Generator
 
 from more_itertools import peekable
 
-# Since this definition has been known to change periodically, it's
-# better to keep a fixed alias for this.
+# See docstring for 'tokenize'.
 type Token = int | str
-
 type Stream = peekable[Token]
 type tokenizer = Callable[[str], Generator[Token]]
 
 
 def _stream(fn: tokenizer) -> Callable[[str], Stream]:
+    """Convert the tokenizer's generator into a peekable."""
+
     def wrapper(raw_expression: str) -> Stream:
         gen = fn(raw_expression)
 
@@ -22,6 +22,13 @@ def _stream(fn: tokenizer) -> Callable[[str], Stream]:
 
 @_stream
 def tokenize(raw_expression: str) -> Generator[Token]:
+    """Tokenize RAW_EXPRESSION.
+
+    Integers are yielded as Python ints; everything else is yielded as
+    its original string representation.
+
+    """
+
     pattern = re.compile(r"\s*((\d+)|(.))")
 
     for mo in re.finditer(pattern, raw_expression):
