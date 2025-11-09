@@ -22,3 +22,14 @@ def test_examples(raw_expression: str, value: int):
     result = main(raw_expression)
 
     assert result == value
+
+
+bad_examples = [
+    "?",
+]
+
+
+@pytest.mark.parametrize("raw_expression", bad_examples)
+def test_bad_examples(raw_expression: str):
+    with pytest.raises(ValueError):
+        _ = main(raw_expression)
