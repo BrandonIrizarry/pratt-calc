@@ -10,26 +10,29 @@ in a future blog post.
 
 # Installation
 
-Dependencies:
+## Using `uv`
 
-The
-[more_itertools](https://more-itertools.readthedocs.io/en/stable/index.html)
-library is used to convert a list of tokens into a peekable stream
-used by the expression parser.
+First, [make
+sure](https://docs.astral.sh/uv/getting-started/installation/) `uv` is
+installed in your system.
 
-Using uv:
+Then,
+
+`git clone https://github.com/BrandonIrizarry/pratt_calc && cd !$`
+
+`uv sync`
+
+# Usage
+
+`uv run pratt_calc $EXPRESSION`
+
+Example: 
+
+`uv run pratt_calc '3-4*5'`
+
+This should print -17 at the console.
 
 
-# Example Usage
 
-Try
-
-`python calculator 3+4*2^(5-1)+1`
-
-or alternatively,
-
-`./calculator 3+4*2^(5-1)+1`
-
-which should print 68 at the console.
 
 
