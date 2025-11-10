@@ -12,27 +12,35 @@ in a future blog post.
 
 ## Using `uv`
 
-First, [make
-sure](https://docs.astral.sh/uv/getting-started/installation/) `uv` is
+1. [Make sure](https://docs.astral.sh/uv/getting-started/installation/) `uv` is
 installed in your system.
 
-Then,
+2. `git clone https://github.com/BrandonIrizarry/pratt_calc && cd !$`
 
-`git clone https://github.com/BrandonIrizarry/pratt_calc && cd !$`
+3. `uv sync`
 
-`uv sync`
+## Conventional
+
+1. `git clone https://github.com/BrandonIrizarry/pratt_calc && cd !$`
+
+2. `python -m venv venv`
+
+3. `source venv/bin/activate`
+
+4. `pip install .` 
 
 # Usage
 
-`uv run pratt_calc $EXPRESSION`
+`./pratt_calc $EXPRESSION`
 
 Example: 
 
-`uv run pratt_calc '3-4*5'`
+`./pratt_calc '3-4*5'`
 
 This should print -17 at the console.
 
+# TODO
 
-
-
+- [ ] add support for running the tests.
+- [ ] CI?
 
