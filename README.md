@@ -44,9 +44,34 @@ uv sync --locked
 
 Example: 
 
-`pratt-calc 3-4*5`
+`pratt-calc '3-4*5'`
 
 This should print `-17` at the console.
 
+Note that surrounding the input with single-quotes is recommended for
+all but the simplest expressions, to avoid clashing with the shell
+you're using.
 
+# Trigonometric Functions
 
+`pratt-calc` supports the following trigonometric functions:
+
+1. sin
+2. cos
+3. tan
+4. csc
+5. sec
+6. cot
+
+The constant 𝝿 is also available as `pi`. Examples:
+
+`pratt-calc 'cos(pi)'` => `-1.0`
+
+`pratt-calc 'sin(1)^2 + cos(1)^2'` => `1.0`
+
+## A Note on the Implementation of Trig Functions
+
+Trig functions are implemented as unary operators, as opposed to
+function calls. Hence the parentheses used by `sin` and so forth are
+merely there to enforce precedence, even though they conveniently
+evoke the intuition of a function call.
