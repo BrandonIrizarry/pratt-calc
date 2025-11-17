@@ -28,6 +28,7 @@ def test_examples(raw_expression: str, value: int):
 
 float_examples = [
     ("3.3", 3.3),
+    ("3.3+4.4", 7.7),
 ]
 
 
