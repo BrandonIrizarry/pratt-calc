@@ -1,6 +1,8 @@
 import pytest
+
 from pratt_calc import main
 
+# The original set of examples, before floats were introduced.
 examples = [
     ("3", 3),
     ("3 + 4", 7),
