@@ -24,6 +24,18 @@ def test_examples(raw_expression: str, value: int):
     assert result == value
 
 
+float_examples = [
+    ("3.3", 3.3),
+]
+
+
+@pytest.mark.parametrize("raw_expression, value", float_examples)
+def test_float_examples(raw_expression: str, value: int | float):
+    result = main(raw_expression)
+
+    assert result == value
+
+
 bad_examples = [
     "?",
     "(3",
