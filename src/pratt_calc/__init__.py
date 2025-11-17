@@ -9,7 +9,7 @@ def run():
     print(value)
 
 
-def main(raw_expression: str) -> int:
+def main(raw_expression: str) -> int | float:
     """The proper entry-point into the application.
 
     Consume RAW_EXPRESSION, and compute an integer result.
