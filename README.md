@@ -65,6 +65,8 @@ you're using.
 
 The constant 𝝿 is also available as `pi`. Examples:
 
+`pi` => `3.141592653589793`
+
 `pratt-calc 'cos(pi)'` => `-1.0`
 
 `pratt-calc 'sin(1)^2 + cos(1)^2'` => `1.0`
@@ -75,3 +77,18 @@ Trig functions are implemented as unary operators, as opposed to
 function calls. Hence the parentheses used by `sin` and so forth are
 merely there to enforce precedence, even though they conveniently
 evoke the intuition of a function call.
+
+Hence `sin²(1) + cos²(1)` can be written (somewhat misleadingly) as
+follows:
+
+`sin 1^2 + cos 1^2`
+
+This evaluates to `1.0`.
+
+For this reason, parentheses in this case are always recommended.
+
+As an aside, to evaluate `[sin(1)]² + [cos(1)]²`, write:
+
+`sin (1^2) + cos (1^2)`
+
+This evaluates to `1.3817732906760363`.
