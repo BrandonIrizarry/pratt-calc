@@ -6,7 +6,12 @@ from pratt_calc.main import evaluate
 
 @final
 class Repl(cmd.Cmd):
-    intro = "Welcome to the Pratt Calc REPL. Type 'exit' to exit."
+    intro = """Welcome to the Pratt Calc REPL.
+
+Use Ctrl+D (or the 'exit' command) to exit.
+
+Type 'help' or '?' to list all commands."""
+
     prompt = "(calc) "
 
     @override
