@@ -2,7 +2,7 @@ import math
 
 import pytest
 
-from pratt_calc.main import main
+from pratt_calc.main import evaluate
 
 # The original set of examples, before floats were introduced.
 examples = [
@@ -24,7 +24,7 @@ examples = [
 
 @pytest.mark.parametrize("raw_expression, value", examples)
 def test_examples(raw_expression: str, value: int):
-    result = main(raw_expression)
+    result = evaluate(raw_expression)
 
     assert result == value
 
@@ -50,7 +50,7 @@ float_examples = [
 
 @pytest.mark.parametrize("raw_expression, value", float_examples)
 def test_float_examples(raw_expression: str, value: int | float):
-    result = main(raw_expression)
+    result = evaluate(raw_expression)
 
     assert math.isclose(result, value, abs_tol=1e-10)
 
@@ -66,4 +66,4 @@ bad_examples = [
 @pytest.mark.parametrize("raw_expression", bad_examples)
 def test_bad_examples(raw_expression: str):
     with pytest.raises((ValueError, AssertionError, ZeroDivisionError)):
-        _ = main(raw_expression)
+        _ = evaluate(raw_expression)
