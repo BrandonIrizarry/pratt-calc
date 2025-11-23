@@ -1,3 +1,4 @@
+import pathlib
 from typing import Annotated
 
 import typer
@@ -18,7 +19,17 @@ def app():
         if filename == "":
             Repl().cmdloop()
         else:
-            with open(filename, encoding="utf-8") as f:
+            path = pathlib.Path(filename)
+
+            if not path.exists():
+                print(f"Fatal: '{path}' doesn't exist")
+                raise typer.Abort()
+
+            if path.is_dir():
+                print(f"Fatal: '{path}' is a directory")
+                raise typer.Abort()
+
+            with path.open(encoding="utf-8") as f:
                 code = f.read()
 
                 print(evaluate(code))
