@@ -1,9 +1,8 @@
-import pathlib
 from typing import Annotated
 
 import typer
 
-from pratt_calc.main import evaluate
+from pratt_calc.main import eval_from_file, evaluate
 from pratt_calc.repl import Repl
 
 
@@ -28,20 +27,11 @@ def app():
             print(evaluate(exp))
 
         if filename != "":
-            path = pathlib.Path(filename)
-
-            if not path.exists():
-                print(f"Fatal: '{path}' doesn't exist")
+            try:
+                print(eval_from_file(filename))
+            except Exception as e:
+                print(e)
                 raise typer.Abort()
-
-            if path.is_dir():
-                print(f"Fatal: '{path}' is a directory")
-                raise typer.Abort()
-
-            with path.open(encoding="utf-8") as f:
-                code = f.read()
-
-                print(evaluate(code))
 
         launch_repl = interactive or (filename == "" and exp == "")
 
