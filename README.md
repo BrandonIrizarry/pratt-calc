@@ -40,17 +40,54 @@ uv sync --locked
 
 # Usage
 
-`pratt-calc $EXPRESSION`
+Pratt Calc, as a command-line app, is built using
+[Typer](https://typer.tiangolo.com/). Built-in help is accessible via
+the `--help` switch:
 
-Example: 
+`pratt-calc --help`
+
+Pratt Calc supports three modes of usage:
+
+1. Evaluating expressions from inside a REPL;
+2. evaluating the contents of a source file, and
+3. evaluating an expression given at the command line.
+
+These are described below.
+
+## REPL
+
+To launch the REPL:
+
+`pratt-calc`
+
+To exit the REPL, `Ctrl+D` or issuing the `exit` command suffice.
+
+## Loading a file
+
+To execute the contents of a file:
+
+`pratt-calc FILENAME`
+
+## Evaluating an expression on the fly
+
+To evaluate a one-off expression:
+
+`pratt-calc -e EXPRESSION`
+
+Single quotes surrounding the expression are recommended, to prevent
+shell expansion. Example:
 
 `pratt-calc '3-4*5'`
 
 This should print `-17` at the console.
 
-Note that surrounding the input with single-quotes is recommended for
-all but the simplest expressions, to avoid clashing with the shell
-you're using.
+## Combining switches (the `-i` flag)
+
+If neither a filename argument nor `-e` are provided, the REPL will
+launch. Conversely, if either one is present, the REPL will not
+launch. However, you can use `-i` to force the REPL to launch in such
+a case.
+
 
 # Trigonometric Functions
 
@@ -65,11 +102,11 @@ you're using.
 
 The constant 𝝿 is also available as `pi`. Examples:
 
-`pi` => `3.141592653589793`
+`pratt-calc -e 'pi'` => `3.141592653589793`
 
-`pratt-calc 'cos(pi)'` => `-1.0`
+`pratt-calc -e 'cos(pi)'` => `-1.0`
 
-`pratt-calc 'sin(1)^2 + cos(1)^2'` => `1.0`
+`pratt-calc -e 'sin(1)^2 + cos(1)^2'` => `1.0`
 
 ## A Note on the Implementation of Trig Functions
 
