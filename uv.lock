@@ -110,7 +110,7 @@ wheels = [
 
 [[package]]
 name = "pratt-calc"
-version = "0.2.2"
+version = "1.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "more-itertools" },
