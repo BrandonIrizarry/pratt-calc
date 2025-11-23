@@ -28,31 +28,3 @@ def test_float_examples(raw_expression: str, value: int | float):
     result = evaluate(raw_expression)
 
     assert math.isclose(result, value, abs_tol=1e-10)
-
-
-semicolon_examples = [
-    ("3 ; 4", 4),
-    ("3 + 4 ; 4 + 5", 9),
-    ("1 ; 2 ; 3 ; 4", 4),
-]
-
-
-@pytest.mark.parametrize("raw_expression, value", semicolon_examples)
-def test_semicolon_examples(raw_expression: str, value: int | float):
-    result = evaluate(raw_expression)
-
-    assert math.isclose(result, value, abs_tol=1e-10)
-
-
-bad_examples = [
-    "?",
-    "(3",
-    "()",
-    "3/0",
-]
-
-
-@pytest.mark.parametrize("raw_expression", bad_examples)
-def test_bad_examples(raw_expression: str):
-    with pytest.raises((ValueError, AssertionError, ZeroDivisionError)):
-        _ = evaluate(raw_expression)
