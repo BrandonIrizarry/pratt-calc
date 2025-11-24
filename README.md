@@ -51,19 +51,16 @@ uv sync --locked
 
 # Usage
 
-Pratt Calc, as a command-line app, is built using
-[Typer](https://typer.tiangolo.com/). Built-in help is accessible via
-the `--help` switch:
-
-`pratt-calc --help`
-
 Pratt Calc supports three modes of usage:
 
 1. Evaluating expressions from inside a REPL;
 2. evaluating the contents of a source file, and
 3. evaluating an expression given at the command line.
 
-These are described below.
+Also see
+
+`pratt-calc --help`
+
 
 ## REPL
 
