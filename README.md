@@ -162,9 +162,3 @@ follows:
 This evaluates to `1.0`.
 
 For this reason, parentheses in this case are always recommended.
-
-As an aside, to evaluate `[sin(1)]² + [cos(1)]²`, write:
-
-`sin (1^2) + cos (1^2)`
-
-This evaluates to `1.3817732906760363`.
