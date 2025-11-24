@@ -162,3 +162,13 @@ follows:
 This evaluates to `1.0`.
 
 For this reason, parentheses in this case are always recommended.
+
+# A Note on Libraries Used
+
+Pratt Calc, as a command-line app, is built using
+[Typer](https://typer.tiangolo.com/).
+
+It also uses the
+[more-itertools](https://more-itertools.readthedocs.io/en/stable/)
+library to implement the token stream used to drive expression
+evaluation.
