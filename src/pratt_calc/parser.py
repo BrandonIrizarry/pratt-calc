@@ -23,6 +23,7 @@ class Precedence(enum.IntEnum):
 
     NONE = enum.auto()
     SEMICOLON = enum.auto()
+    ASSIGNMENT = enum.auto()
     PLUS_MINUS = enum.auto()
     TIMES_DIVIDE = enum.auto()
     POWER = enum.auto()
@@ -73,8 +74,12 @@ class Parser:
             "^": Precedence.POWER,
             "!": Precedence.FACTORIAL,
             ";": Precedence.SEMICOLON,
+            "<-": Precedence.ASSIGNMENT,
         }
     )
+
+    # For now, our virtual machine has five registers.
+    registers: list[int | float] = [0, 0, 0, 0, 0]
 
     def __init__(self, stream: Stream):
         self.stream = stream
@@ -124,6 +129,12 @@ class Parser:
                 acc = self.expression(Precedence.UNARY)
                 print(acc)
 
+            case "@":
+                # Use 'index' as an index into the registers.
+                index = int(self.expression(Precedence.UNARY))
+
+                acc = self.registers[index]
+
             case _ as token:
                 raise ValueError(f"Invalid nud: {token}")
 
@@ -167,6 +178,17 @@ class Parser:
                     # right-hand side. This will hopefully be useful
                     # for side-effects later.
                     acc = self.expression(Precedence.SEMICOLON)
+
+                case "<-":
+                    right_hand_side = self.expression(Precedence.ASSIGNMENT)
+
+                    # Truncate 'acc' so that we can use it as an index
+                    # into our registers.
+                    self.registers[int(acc)] = right_hand_side
+
+                    # Set the current result to 'right_hand_side',
+                    # like with Lisp's 'setq'.
+                    acc = right_hand_side
 
                 case _ as token:
                     raise ValueError(f"Invalid led: {token}")
