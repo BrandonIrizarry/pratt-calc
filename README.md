@@ -68,7 +68,7 @@ To launch the REPL:
 
 `pratt-calc`
 
-To exit the REPL, `Ctrl+D` or issuing the `exit` command suffice.
+Use the `exit` command (or `Ctrl+D`) to quit the REPL.
 
 ## Loading a file
 
@@ -83,9 +83,9 @@ To evaluate a one-off expression:
 `pratt-calc -e EXPRESSION`
 
 Single quotes surrounding the expression are recommended, to prevent
-shell expansion. Example:
+the shell from expanding `*` and so on. Example:
 
-`pratt-calc '3-4*5'`
+`pratt-calc -e '3-4*5'`
 
 This should print `-17` at the console.
 
