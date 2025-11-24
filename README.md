@@ -96,6 +96,37 @@ launch. Conversely, if either one is present, the REPL will not
 launch. However, you can use `-i` to force the REPL to launch in such
 a case.
 
+# Basic Arithmetic
+
+Pratt Calc is at its most basic level an arithmetic expression
+calculator over integers and floats. It currently supports `+`, `-`,
+`*`, and `\` with their usual meanings of addition, subtraction,
+multiplication, and division respectively. In addition, unary negation
+(e.g. `-2.5`), as well as exponentiation (`^`) and factorial (`!`) are
+supported.
+
+Note that an expression like `3.2!` is first truncated to an integer
+before evaluation, that is, `3.2!` would evaluate to `6`.
+
+Parentheses are used to enforce precedence, viz.,
+
+`pratt-calc -e '(3 + 5) * 2'` => `16`
+
+## Semicolons
+
+Semicolons enable side-effect-based programming, which currently are a
+work in progress. For now, semicolons discard the result of whatever
+is to the left of them:
+
+`pratt-calc -e '3 + 3 ; 3 * 3; 3 ^ 3'` => `27.0`
+
+That is, the result of the above expression is simply the value of the
+last subexpression, namely, `3 ^ 3`.
+
+Note: for now, semicolons can't *terminate* an expression, since
+they're technically infix operators, and thus require a right-hand
+argument! I have some ideas for workarounds, but I'm not focused on
+that right now.
 
 # Trigonometric Functions
 
