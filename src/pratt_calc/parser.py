@@ -29,6 +29,7 @@ class Precedence(enum.IntEnum):
     POWER = enum.auto()
     UNARY = enum.auto()
     FACTORIAL = enum.auto()
+    DEREFERENCE = enum.auto()
 
 
 class LedPrecedenceTable(UserDict[Token, Precedence]):
@@ -131,7 +132,7 @@ class Parser:
 
             case "@":
                 # Use 'index' as an index into the registers.
-                index = int(self.expression(Precedence.UNARY))
+                index = int(self.expression(Precedence.DEREFERENCE))
 
                 acc = self.registers[index]
 
