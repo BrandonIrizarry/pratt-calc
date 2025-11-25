@@ -180,7 +180,8 @@ class Parser:
                     acc = self.expression(Precedence.SEMICOLON)
 
                 case "<-":
-                    right_hand_side = self.expression(Precedence.ASSIGNMENT)
+                    # Assignment is right-associative.
+                    right_hand_side = self.expression(Precedence.ASSIGNMENT - 1)
 
                     # Truncate 'acc' so that we can use it as an index
                     # into our registers.
