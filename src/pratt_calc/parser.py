@@ -3,9 +3,16 @@ from __future__ import annotations
 import enum
 import math
 from collections import UserDict
+from dataclasses import dataclass
 from typing import final, override
 
 from pratt_calc.tokenizer import Stream, Token
+
+
+@dataclass
+class Register:
+    alias: str
+    value: int | float
 
 
 class Precedence(enum.IntEnum):
@@ -79,11 +86,19 @@ class Parser:
         }
     )
 
-    # For now, our virtual machine has five registers.
-    registers: list[int | float] = [0, 0, 0, 0, 0]
+    registers: list[Register] = []
 
     def __init__(self, stream: Stream):
         self.stream = stream
+
+    def dealias(self, target_alias: str) -> int:
+        """Return address associated with locals alias."""
+
+        for i, register in enumerate(self.registers):
+            if register.alias == target_alias:
+                return i
+
+        raise ValueError(f"Fatal: invalid local '{target_alias}'")
 
     def expression(self, level: int = Precedence.NONE) -> int | float:
         """Pratt-parse an arithmetic expression, evaluating it."""
@@ -138,7 +153,27 @@ class Parser:
                 # dereferencing, for example, '@@0'.
                 index = int(self.expression(Precedence.DEREFERENCE - 1))
 
-                acc = self.registers[index]
+                # Of course, here we're only interested in the
+                # register's value, not its alias.
+                acc = self.registers[index].value
+
+            case "local":
+                alias_token = next(self.stream)
+
+                if type(alias_token) is not tuple:
+                    raise ValueError(f"Invalid local name: '{alias_token}'")
+
+                _, alias = alias_token
+
+                self.registers.append(Register(alias, 0))
+
+                # Evaluate to the new register's address.
+                acc = len(self.registers) - 1
+
+            case t if type(t) is tuple:
+                _, alias = t
+
+                acc = self.dealias(alias)
 
             case _ as token:
                 raise ValueError(f"Invalid nud: {token}")
@@ -190,7 +225,7 @@ class Parser:
 
                     # Truncate 'acc' so that we can use it as an index
                     # into our registers.
-                    self.registers[int(acc)] = right_hand_side
+                    self.registers[int(acc)].value = right_hand_side
 
                     # Set the current result to 'right_hand_side',
                     # like with Lisp's 'setq'.

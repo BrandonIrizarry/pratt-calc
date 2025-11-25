@@ -1,10 +1,11 @@
 import re
 from collections.abc import Callable, Generator
+from typing import Literal
 
 from more_itertools import peekable
 
 # See docstring for 'tokenize'.
-type Token = int | float | str
+type Token = int | float | str | tuple[Literal["IDENTIFIER"], str]
 type Stream = peekable[Token]
 type tokenizer = Callable[[str], Generator[Token]]
 
@@ -35,8 +36,9 @@ def tokenize(raw_expression: str) -> Generator[Token]:
 
     token_specification = [
         ("NUMBER", r"\d+(\.\d*)?"),
-        ("BUILTIN", r"pi|sin|cos|tan|sec|csc|cot|print|<-"),
+        ("BUILTIN", r"pi|sin|cos|tan|sec|csc|cot|print|<-|local"),
         ("TOKEN", r"[-+*/!()^;@]"),
+        ("IDENTIFIER", r"[a-zA-Z_][\w]*"),
         ("SKIP", r"[ \t]+"),
         ("ERROR", r"."),
     ]
@@ -53,6 +55,8 @@ def tokenize(raw_expression: str) -> Generator[Token]:
                 yield float(value) if "." in value else int(value)
             case "BUILTIN" | "TOKEN":
                 yield value
+            case "IDENTIFIER":
+                yield ("IDENTIFIER", value)
             case "SKIP":
                 continue
             case "ERROR":
