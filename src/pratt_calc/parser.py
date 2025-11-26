@@ -163,19 +163,6 @@ class Parser:
                 # register's value, not its alias.
                 acc = self.registers[index].value
 
-            case "local":
-                alias_token = next(self.stream)
-
-                if type(alias_token) is not tuple:
-                    raise ValueError(f"Invalid local name: '{alias_token}'")
-
-                _, alias = alias_token
-
-                self.registers.append(Register(alias, 0))
-
-                # Evaluate to the new register's address.
-                acc = len(self.registers) - 1
-
             case t if type(t) is tuple:
                 _, alias = t
 
