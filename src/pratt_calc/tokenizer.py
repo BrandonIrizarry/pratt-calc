@@ -38,8 +38,8 @@ def tokenize(raw_expression: str) -> Generator[Token]:
 
     token_specification = [
         ("NUMBER", r"\d+(\.\d*)?"),
-        ("BUILTIN", r"pi|sin|cos|tan|sec|csc|cot|print|<-"),
-        ("TOKEN", r"[-+*/!()^;@]"),
+        ("BUILTIN", r"pi|sin|cos|tan|sec|csc|cot|print|<-|end"),
+        ("TOKEN", r"[-+*/!()^;@:]"),
         ("IDENTIFIER", r"[a-zA-Z_][\w]*"),
         ("SKIP", r"[ \t]+"),
         ("ERROR", r"."),
@@ -66,4 +66,7 @@ def tokenize(raw_expression: str) -> Generator[Token]:
             case _:
                 raise ValueError(f"Fatal: unknown category '{what}:{value}'")
 
-    yield "eof"
+    # For now, we need "eof" to be a nud with a constant value of 0,
+    # and so led-peeking will continue past the first EOF.
+    while True:
+        yield "eof"

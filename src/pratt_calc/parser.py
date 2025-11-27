@@ -29,6 +29,7 @@ class Precedence(enum.IntEnum):
     """
 
     NONE = enum.auto()
+    ALLOCATE = enum.auto()
     SEMICOLON = enum.auto()
     ASSIGNMENT = enum.auto()
     PLUS_MINUS = enum.auto()
@@ -83,10 +84,13 @@ class Parser:
             "!": Precedence.FACTORIAL,
             ";": Precedence.SEMICOLON,
             "<-": Precedence.ASSIGNMENT,
+            ":": Precedence.ALLOCATE,
+            "end": Precedence.ALLOCATE,
         }
     )
 
     registers: list[Register] = []
+    heap: list[Token] = []
 
     def __init__(self, stream: Stream):
         self.stream = stream
@@ -105,6 +109,29 @@ class Parser:
         self.registers.append(Register(alias, 0))
 
         return len(self.registers) - 1
+
+    def allocate(self) -> int:
+        """Save tokens until 'end' is reached.
+
+        Return address of entry-point into this code.
+
+        """
+
+        entry_point = len(self.heap)
+
+        while True:
+            preview = self.stream.peek()
+
+            if preview == "eof":
+                raise ValueError("Missing 'end'")
+
+            elif preview == "end":
+                # Don't consume 'end'.
+                self.heap.append("end")
+                return entry_point
+
+            else:
+                self.heap.append(next(self.stream))
 
     def expression(self, level: int = Precedence.NONE) -> int | float:
         """Pratt-parse an arithmetic expression, evaluating it."""
@@ -162,6 +189,11 @@ class Parser:
                 # Of course, here we're only interested in the
                 # register's value, not its alias.
                 acc = self.registers[index].value
+
+            case "eof":
+                # A workaround for allocation statements at the
+                # moment.
+                acc = 0
 
             case t if type(t) is tuple:
                 _, alias = t
@@ -223,6 +255,15 @@ class Parser:
                     # Set the current result to 'right_hand_side',
                     # like with Lisp's 'setq'.
                     acc = right_hand_side
+
+                case ":":
+                    heap_address = self.allocate()
+                    self.registers[int(acc)].value = heap_address
+
+                    print(self.heap)
+
+                case "end":
+                    acc = self.expression()
 
                 case _ as token:
                     raise ValueError(f"Invalid led: {token}")
