@@ -159,8 +159,7 @@ class Parser:
                 # dereferencing, for example, '@@alice'.
                 index = int(self.expression(Precedence.DEREFERENCE - 1))
 
-                # Of course, here we're only interested in the
-                # register's value, not its alias.
+                # Retrieve the programmer-stored value.
                 acc = self.registers[index].value
 
             case t if type(t) is tuple:
