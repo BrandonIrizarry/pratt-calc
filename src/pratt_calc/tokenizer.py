@@ -21,7 +21,7 @@ class Token(NamedTuple):
 
 
 @final
-class Operator(SimpleNamespace):
+class Op(SimpleNamespace):
     eof = Token(Type.EOF, "eof")
     lparen = Token(Type.OPERATOR, "(")
     rparen = Token(Type.OPERATOR, ")")

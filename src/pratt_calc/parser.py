@@ -6,7 +6,7 @@ from collections import UserDict
 from dataclasses import dataclass
 from typing import final, override
 
-from pratt_calc.tokenizer import Operator, Stream, Token, Type
+from pratt_calc.tokenizer import Op, Stream, Token, Type
 
 
 @dataclass
@@ -73,16 +73,16 @@ class Parser:
 
     led_precedence = LedPrecedenceTable(
         {
-            Operator.eof: Precedence.NONE,
-            Operator.rparen: Precedence.NONE,
-            Operator.plus: Precedence.PLUS_MINUS,
-            Operator.minus: Precedence.PLUS_MINUS,
-            Operator.times: Precedence.TIMES_DIVIDE,
-            Operator.divide: Precedence.TIMES_DIVIDE,
-            Operator.power: Precedence.POWER,
-            Operator.factorial: Precedence.FACTORIAL,
-            Operator.semicolon: Precedence.SEMICOLON,
-            Operator.assign: Precedence.ASSIGNMENT,
+            Op.eof: Precedence.NONE,
+            Op.rparen: Precedence.NONE,
+            Op.plus: Precedence.PLUS_MINUS,
+            Op.minus: Precedence.PLUS_MINUS,
+            Op.times: Precedence.TIMES_DIVIDE,
+            Op.divide: Precedence.TIMES_DIVIDE,
+            Op.power: Precedence.POWER,
+            Op.factorial: Precedence.FACTORIAL,
+            Op.semicolon: Precedence.SEMICOLON,
+            Op.assign: Precedence.ASSIGNMENT,
         }
     )
 
@@ -128,42 +128,42 @@ class Parser:
 
             case Type.OPERATOR:
                 match current:
-                    case Operator.pi:
+                    case Op.pi:
                         acc = math.pi
 
-                    case Operator.sin:
+                    case Op.sin:
                         acc = math.sin(self.expression(Precedence.UNARY))
 
-                    case Operator.cos:
+                    case Op.cos:
                         acc = math.cos(self.expression(Precedence.UNARY))
 
-                    case Operator.tan:
+                    case Op.tan:
                         acc = math.tan(self.expression(Precedence.UNARY))
 
-                    case Operator.sec:
+                    case Op.sec:
                         acc = 1 / math.cos(self.expression(Precedence.UNARY))
 
-                    case Operator.csc:
+                    case Op.csc:
                         acc = 1 / math.sin(self.expression(Precedence.UNARY))
 
-                    case Operator.cot:
+                    case Op.cot:
                         acc = 1 / math.tan(self.expression(Precedence.UNARY))
 
-                    case Operator.minus:
+                    case Op.minus:
                         acc = -self.expression(Precedence.UNARY)
 
-                    case Operator.lparen:
+                    case Op.lparen:
                         acc = self.expression(Precedence.NONE)
 
                         # We don't drive parsing/evaluation with right-paren,
                         # so we skip it as we read it.
-                        assert next(self.stream) == Operator.rparen
+                        assert next(self.stream) == Op.rparen
 
-                    case Operator.prt:
+                    case Op.prt:
                         acc = self.expression(Precedence.UNARY)
                         print(acc)
 
-                    case Operator.at:
+                    case Op.at:
                         # Use 'index' as an index into the registers.
                         #
                         # Note that '@' should be right-associative, in case
@@ -182,24 +182,24 @@ class Parser:
 
             # LED
             match current:
-                case Operator.plus:
+                case Op.plus:
                     acc += self.expression(Precedence.PLUS_MINUS)
 
-                case Operator.minus:
+                case Op.minus:
                     acc -= self.expression(Precedence.PLUS_MINUS)
 
-                case Operator.times:
+                case Op.times:
                     acc *= self.expression(Precedence.TIMES_DIVIDE)
 
-                case Operator.divide:
+                case Op.divide:
                     acc /= self.expression(Precedence.TIMES_DIVIDE)
 
-                case Operator:
+                case Op.power:
                     # Enforce right-association by subtracting 1 from
                     # the precedence argument.
                     acc = math.pow(acc, self.expression(Precedence.POWER - 1))
 
-                case "!":
+                case Op.factorial:
                     # Compute factorial by hand.
                     #
                     # If ACC is a float, truncate it first to an int.
@@ -212,13 +212,13 @@ class Parser:
 
                         acc = prod
 
-                case ";":
+                case Op.semicolon:
                     # Discard the left-hand side, keeping only the
                     # right-hand side. This will hopefully be useful
                     # for side-effects later.
                     acc = self.expression(Precedence.SEMICOLON)
 
-                case "<-":
+                case Op.assign:
                     # Assignment is right-associative.
                     right_hand_side = self.expression(Precedence.ASSIGNMENT - 1)
 
