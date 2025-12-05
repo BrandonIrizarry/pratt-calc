@@ -113,15 +113,14 @@ class Parser:
         current = next(self.stream)
 
         match current.tag:
-            case Type.NUMBER:
-                acc = current.what
+            case Type.INT:
+                acc = int(current.what)
+
+            case Type.FLOAT:
+                acc = float(current.what)
 
             case Type.IDENTIFIER:
-                # FIXME: for now, we force conversion to a string,
-                # though it may be wiser for tokens to only carry
-                # strings, and this parser would then dispatch the
-                # string cargo appropriately.
-                acc = self.dealias(str(current.what))
+                acc = self.dealias(current.what)
 
             case Type.EOF:
                 raise ValueError("Invalid eof")

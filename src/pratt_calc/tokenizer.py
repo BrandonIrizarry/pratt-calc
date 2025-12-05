@@ -9,7 +9,8 @@ from more_itertools import peekable
 
 
 class Type(enum.Enum):
-    NUMBER = enum.auto()
+    INT = enum.auto()
+    FLOAT = enum.auto()
     OPERATOR = enum.auto()
     IDENTIFIER = enum.auto()
     EOF = enum.auto()
@@ -17,7 +18,7 @@ class Type(enum.Enum):
 
 class Token(NamedTuple):
     tag: Type
-    what: str | int | float
+    what: str
 
 
 @final
@@ -91,7 +92,10 @@ def tokenize(raw_expression: str) -> Generator[Token]:
 
         match what:
             case "NUMBER":
-                yield Token(Type.NUMBER, float(value) if "." in value else int(value))
+                if "." in value:
+                    yield Token(Type.FLOAT, value)
+                else:
+                    yield Token(Type.INT, value)
             case "OPERATOR":
                 yield Token(Type.OPERATOR, value)
             case "IDENTIFIER":
