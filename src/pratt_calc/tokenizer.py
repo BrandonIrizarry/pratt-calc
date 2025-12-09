@@ -54,6 +54,8 @@ class Op(SimpleNamespace):
     sec = Token(Type.OPERATOR, "sec")
     csc = Token(Type.OPERATOR, "csc")
     cot = Token(Type.OPERATOR, "cot")
+    quote = Token(Type.OPERATOR, "{")
+    endquote = Token(Type.OPERATOR, "}")
 
 
 # See docstring for 'tokenize'.
@@ -88,7 +90,7 @@ def tokenize(raw_expression: str) -> Generator[Token]:
 
     token_specification = [
         ("NUMBER", r"\d+(\.\d*)?"),
-        ("OPERATOR", r"pi|sin|cos|tan|sec|csc|cot|print|<-|[-+*/!()^;@]"),
+        ("OPERATOR", r"pi|sin|cos|tan|sec|csc|cot|print|<-|[-+*/!()^;@{}]"),
         ("IDENTIFIER", r"[a-zA-Z_][\w]*"),
         ("SKIP", r"[ \t]+"),
         ("ERROR", r"."),

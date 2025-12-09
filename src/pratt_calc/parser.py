@@ -87,6 +87,7 @@ class Parser:
     )
 
     registers: list[Register] = []
+    heap: list[Token] = []
 
     def __init__(self, stream: Stream):
         self.stream = stream
@@ -172,6 +173,14 @@ class Parser:
 
                         # Retrieve the programmer-stored value.
                         acc = self.registers[index].value
+
+                    case Op.quote:
+                        start = len(self.heap)
+
+                        while (t := next(self.stream)) != Op.endquote:
+                            self.heap.append(t)
+
+                        acc = start
 
                     case _ as nonexistent:
                         raise ValueError(f"Nonexistent operator '{nonexistent}'")
