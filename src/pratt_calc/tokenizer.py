@@ -107,14 +107,19 @@ def tokenize(raw_expression: str) -> Generator[Token]:
                     yield Token(Type.FLOAT, value)
                 else:
                     yield Token(Type.INT, value)
+
             case "OPERATOR":
                 yield Token(Type.OPERATOR, value)
+
             case "IDENTIFIER":
                 yield Token(Type.IDENTIFIER, value)
+
             case "SKIP":
                 continue
+
             case "ERROR":
                 raise ValueError(f"Fatal: invalid token '{value}'")
+
             case _:
                 raise ValueError(f"Fatal: unknown category '{what}:{value}'")
 
