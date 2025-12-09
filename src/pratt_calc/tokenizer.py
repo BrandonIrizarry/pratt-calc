@@ -9,6 +9,8 @@ from more_itertools import peekable
 
 
 class Type(enum.Enum):
+    """A type tag for tokens."""
+
     INT = enum.auto()
     FLOAT = enum.auto()
     OPERATOR = enum.auto()
@@ -17,12 +19,21 @@ class Type(enum.Enum):
 
 
 class Token(NamedTuple):
+    """Associate a "raw" token with a type tag."""
+
     tag: Type
     what: str
 
 
 @final
 class Op(SimpleNamespace):
+    """The various Pratt Calc token constants.
+
+    This exists because non-identifier tokens are always the same, for
+    example, the token representing the plus operator.
+
+    """
+
     eof = Token(Type.EOF, "eof")
     lparen = Token(Type.OPERATOR, "(")
     rparen = Token(Type.OPERATOR, ")")
