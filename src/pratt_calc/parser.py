@@ -175,6 +175,9 @@ class Parser:
                         acc = self.registers[index].value
 
                     case Op.quote:
+                        # Note that this case doesn't call
+                        # 'expression': it flatly consumes the next
+                        # series of tokens until '}' is seen.
                         start = len(self.heap)
                         expr: list[Token] = []
 
