@@ -189,6 +189,26 @@ class Parser:
 
                         acc = start
 
+                    case Op.call:
+                        # First evaluate the corresponding register
+                        # address, then dereference it.
+                        register_addr = int(self.expression(Precedence.UNARY))
+                        len_addr = int(self.registers[register_addr].value)
+
+                        expr_len_t = self.heap[len_addr]
+
+                        if expr_len_t.tag != Type.INT:
+                            raise ValueError(f"Non-int tag at heap address {len_addr}")
+
+                        expr_len = int(expr_len_t.what)
+
+                        # Get the address of the code itself.
+                        addr = len_addr + 1
+                        code = self.heap[addr : addr + expr_len]
+                        self.stream.prepend(*code)
+
+                        acc = self.expression(Precedence.NONE)
+
                     case _ as nonexistent:
                         raise ValueError(f"Nonexistent operator '{nonexistent}'")
 
