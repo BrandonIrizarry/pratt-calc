@@ -241,10 +241,6 @@ class Evaluator:
 
                         len_addr = type_addr + 1
                         expr_len_t = self.heap[len_addr]
-
-                        if expr_len_t.tag != Type.INT:
-                            raise ValueError(f"Non-int tag at heap address {len_addr}")
-
                         expr_len = int(expr_len_t.what)
 
                         # Get the address of the code itself.
