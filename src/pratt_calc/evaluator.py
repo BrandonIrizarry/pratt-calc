@@ -162,6 +162,9 @@ class Evaluator:
             case Type.EOF:
                 raise ValueError("Invalid eof")
 
+            case Type.ERROR:
+                raise ValueError(f"Invalid token: '{current}'")
+
             case Type.OPERATOR:
                 match current:
                     case Op.pi:
