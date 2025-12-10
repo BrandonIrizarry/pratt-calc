@@ -202,11 +202,15 @@ class Evaluator:
                         # First evaluate the corresponding register
                         # address, then dereference it.
                         register_addr = int(self.expression(Precedence.UNARY))
+
+                        if register_addr >= len(self.registers):
+                            raise ValueError(f"Illegal local address: {register_addr}")
+
                         type_addr = int(self.registers[register_addr].value)
                         type_t = self.heap[type_addr]
 
                         if type_t != Internal.string:
-                            raise ValueError(f"Illegal string-address: '{type_addr}'")
+                            raise ValueError(f"Illegal string-address: {type_addr}")
 
                         len_addr = type_addr + 1
                         expr_len_t = self.heap[len_addr]
@@ -251,11 +255,15 @@ class Evaluator:
                         # First evaluate the corresponding register
                         # address, then dereference it.
                         register_addr = int(self.expression(Precedence.UNARY))
+
+                        if register_addr >= len(self.registers):
+                            raise ValueError(f"Illegal local address: {register_addr}")
+
                         type_addr = int(self.registers[register_addr].value)
                         type_t = self.heap[type_addr]
 
                         if type_t != Internal.code:
-                            raise ValueError(f"Illegal call-address: '{type_addr}'")
+                            raise ValueError(f"Illegal call-address: {type_addr}")
 
                         len_addr = type_addr + 1
                         expr_len_t = self.heap[len_addr]
