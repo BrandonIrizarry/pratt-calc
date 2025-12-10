@@ -1,7 +1,7 @@
 import cmd
 from typing import final, override
 
-from pratt_calc.main import evaluate
+from pratt_calc.evaluator import Evaluator
 
 
 @final
@@ -14,11 +14,16 @@ Type 'help' or '?' to list all commands."""
 
     prompt = "(calc) "
 
+    def __init__(self, ev: Evaluator):
+        super().__init__()
+
+        self.ev = ev
+
     @override
     def default(self, line: str):
         """Read, evaluate and print the provided expression."""
 
-        print(evaluate(line))
+        print(self.ev.evaluate(line))
 
     @override
     def precmd(self, line: str):
@@ -34,7 +39,3 @@ Type 'help' or '?' to list all commands."""
 
         print()
         return True
-
-
-if __name__ == "__main__":
-    Repl().cmdloop()

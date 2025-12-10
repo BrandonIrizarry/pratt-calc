@@ -2,7 +2,7 @@ from typing import Annotated
 
 import typer
 
-from pratt_calc.main import eval_from_file, evaluate
+from pratt_calc.evaluator import Evaluator
 from pratt_calc.repl import Repl
 
 
@@ -33,12 +33,14 @@ def app():
 
         """
 
+        ev = Evaluator()
+
         if exp != "":
-            print(evaluate(exp))
+            print(ev.evaluate(exp))
 
         if filename != "":
             try:
-                print(eval_from_file(filename))
+                print(ev.evaluate_file(filename))
             except Exception as e:
                 print(e)
                 raise typer.Abort()
@@ -46,6 +48,6 @@ def app():
         launch_repl = interactive or (filename == "" and exp == "")
 
         if launch_repl:
-            Repl().cmdloop()
+            Repl(ev).cmdloop()
 
     typer.run(cli)

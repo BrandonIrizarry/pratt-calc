@@ -1,6 +1,6 @@
 import pytest
 
-from pratt_calc.main import evaluate
+from pratt_calc.evaluator import Evaluator
 
 # The original set of examples, before floats were introduced.
 basic = [
@@ -22,6 +22,7 @@ basic = [
 
 @pytest.mark.parametrize("raw_expression, value", basic)
 def test_basic(raw_expression: str, value: int):
-    result = evaluate(raw_expression)
+    ev = Evaluator()
+    result = ev.evaluate(raw_expression)
 
     assert result == value

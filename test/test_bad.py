@@ -1,6 +1,6 @@
 import pytest
 
-from pratt_calc.main import evaluate
+from pratt_calc.evaluator import Evaluator
 
 bad_examples = [
     "?",
@@ -13,4 +13,6 @@ bad_examples = [
 @pytest.mark.parametrize("raw_expression", bad_examples)
 def test_bad_examples(raw_expression: str):
     with pytest.raises((ValueError, AssertionError, ZeroDivisionError)):
-        _ = evaluate(raw_expression)
+        ev = Evaluator()
+
+        _ = ev.evaluate(raw_expression)

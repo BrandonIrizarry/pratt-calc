@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import enum
 import math
+import pathlib
 from collections import UserDict
 from dataclasses import dataclass
 from typing import final, override
 
-from pratt_calc.tokenizer import Op, Stream, Token, Type
+from pratt_calc.tokenizer import Op, Token, Type, tokenize
 
 
 @dataclass
@@ -86,11 +87,40 @@ class Evaluator:
         }
     )
 
-    registers: list[Register] = []
-    heap: list[Token] = []
+    def __init__(self):
+        # Initialize an empty token stream.
+        self.stream = tokenize("")
+        self.registers: list[Register] = []
+        self.heap: list[Token] = []
 
-    def __init__(self, stream: Stream):
-        self.stream = stream
+    def evaluate(self, raw_expression: str) -> int | float:
+        """Evaluate RAW_EXPRESSION.
+
+        Note that each call to EVALUATE per object will peristently
+        grow both the registers and the heap.
+
+        """
+
+        tokens = tokenize(raw_expression)
+        self.stream.prepend(*tokens)
+
+        return self.expression()
+
+    def evaluate_file(self, filename: str) -> int | float:
+        """Execute code in FILENAME."""
+
+        path = pathlib.Path(filename)
+
+        if not path.exists():
+            raise FileNotFoundError(f"Fatal: '{path}' doesn't exist")
+
+        if path.is_dir():
+            raise IsADirectoryError(f"Fatal: '{path}' is a directory")
+
+        with path.open(encoding="utf-8") as f:
+            code = f.read()
+
+            return self.evaluate(code)
 
     def dealias(self, alias: str) -> int:
         """Return address associated with locals alias.
