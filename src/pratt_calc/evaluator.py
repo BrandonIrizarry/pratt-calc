@@ -199,8 +199,26 @@ class Evaluator:
                         assert next(self.stream) == Op.rparen
 
                     case Op.prt:
-                        acc = self.expression(Precedence.UNARY)
-                        print(acc)
+                        # First evaluate the corresponding register
+                        # address, then dereference it.
+                        register_addr = int(self.expression(Precedence.UNARY))
+                        type_addr = int(self.registers[register_addr].value)
+                        type_t = self.heap[type_addr]
+
+                        if type_t != Internal.string:
+                            raise ValueError(f"Illegal string-address: '{type_addr}'")
+
+                        len_addr = type_addr + 1
+                        expr_len_t = self.heap[len_addr]
+                        expr_len = int(expr_len_t.what)
+
+                        # Get the address of the string itself.
+                        string_addr = len_addr + 1
+                        string = self.heap[string_addr : string_addr + expr_len]
+
+                        print(string)
+
+                        acc = self.expression(Precedence.NONE)
 
                     case Op.at:
                         # Use 'index' as an index into the registers.
