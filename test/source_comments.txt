@@ -1,0 +1,26 @@
+/*
+Some comments at the beginning of the file.
+
+As in C, these block comments can't be nested.
+
+After all, we only clip them out with a simple regex before reading
+any tokens.
+*/
+
+/* Store some code to compute the fifth triangle number. */
+triangle_5 <- {1 + 2 + 3 + 4 + 5} ;
+result <- {call triangle_5} ;
+
+/* The current value of 'result' should be 0. */
+print(result) ;
+
+/*
+This should print out 15.
+
+Also, for now we can't _end_ source files with a semicolon.
+
+Let's see if we can convert newlines to semicolons before reading
+tokens.
+*/
+
+print(call result)
