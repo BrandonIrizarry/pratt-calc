@@ -248,6 +248,13 @@ class Evaluator:
 
                         acc = self.expression(Precedence.NONE)
 
+                    case Op.semicolon:
+                        # As a nud, ';' is a no-op. This lets users
+                        # input empty "statements" like ';;', or else
+                        # lets a future preprocessing step inject
+                        # semicolons where needed.
+                        acc = self.expression(Precedence.NONE)
+
                     case _ as nonexistent:
                         raise ValueError(f"Invalid nud: '{nonexistent}'")
 
