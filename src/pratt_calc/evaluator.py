@@ -218,14 +218,14 @@ class Evaluator:
                         # 'expression': it flatly consumes the next
                         # series of tokens until '}' is seen.
                         start = len(self.heap)
-                        expr: list[Token] = []
+                        code_expr: list[Token] = []
 
                         while (t := next(self.stream)) != Op.endquote:
-                            expr.append(t)
+                            code_expr.append(t)
 
                         self.heap.append(Internal.code)
-                        self.heap.append(Token(Type.INT, str(len(expr))))
-                        self.heap.extend(expr)
+                        self.heap.append(Token(Type.INT, str(len(code_expr))))
+                        self.heap.extend(code_expr)
 
                         acc = start
 
@@ -259,14 +259,14 @@ class Evaluator:
 
                     case Op.string:
                         start = len(self.heap)
-                        expr: list[Token] = []
+                        string_expr: list[Token] = []
 
                         while (t := next(self.stream)) != Op.string:
-                            expr.append(t)
+                            string_expr.append(t)
 
                         self.heap.append(Internal.string)
-                        self.heap.append(Token(Type.INT, str(len(expr))))
-                        self.heap.extend(expr)
+                        self.heap.append(Token(Type.INT, str(len(string_expr))))
+                        self.heap.extend(string_expr)
 
                         acc = start
 
