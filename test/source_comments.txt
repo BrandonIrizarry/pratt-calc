@@ -11,7 +11,7 @@ any tokens.
 triangle_5 <- {1 + 2 + 3 + 4 + 5}
 result <- {call triangle_5}
 
-/* This should print 10. */
+/* This should print 11. */
 print(@result)
 
 /* This should print out 15. */

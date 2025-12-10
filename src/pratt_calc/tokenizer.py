@@ -16,6 +16,7 @@ class Type(enum.Enum):
     OPERATOR = enum.auto()
     IDENTIFIER = enum.auto()
     ERROR = enum.auto()
+    HEAP = enum.auto()
     EOF = enum.auto()
 
 
@@ -62,6 +63,19 @@ class Op(SimpleNamespace):
     quote = Token(Type.OPERATOR, "{")
     endquote = Token(Type.OPERATOR, "}")
     call = Token(Type.OPERATOR, "call")
+
+
+@final
+class Internal(SimpleNamespace):
+    """Tokens used to distinguish various kinds of data that live
+    inside the heap.
+
+    User code is not allowed to produce these tokens.
+
+    """
+
+    code = Token(Type.HEAP, "code")
+    string = Token(Type.HEAP, "string")
 
 
 # See docstring for 'tokenize'.

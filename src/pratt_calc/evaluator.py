@@ -7,7 +7,7 @@ from collections import UserDict
 from dataclasses import dataclass
 from typing import final, override
 
-from pratt_calc.tokenizer import Op, Token, Type, tokenize
+from pratt_calc.tokenizer import Internal, Op, Token, Type, tokenize
 
 
 @dataclass
@@ -162,7 +162,7 @@ class Evaluator:
             case Type.EOF:
                 acc = 0
 
-            case Type.ERROR:
+            case Type.ERROR | Type.HEAP:
                 raise ValueError(f"Invalid token: '{current}'")
 
             case Type.OPERATOR:
@@ -223,6 +223,7 @@ class Evaluator:
                         while (t := next(self.stream)) != Op.endquote:
                             expr.append(t)
 
+                        self.heap.append(Internal.code)
                         self.heap.append(Token(Type.INT, str(len(expr))))
                         self.heap.extend(expr)
 
@@ -232,8 +233,13 @@ class Evaluator:
                         # First evaluate the corresponding register
                         # address, then dereference it.
                         register_addr = int(self.expression(Precedence.UNARY))
-                        len_addr = int(self.registers[register_addr].value)
+                        type_addr = int(self.registers[register_addr].value)
+                        type_t = self.heap[type_addr]
 
+                        if type_t != Internal.code:
+                            raise ValueError(f"Illegal call-address: '{type_addr}'")
+
+                        len_addr = type_addr + 1
                         expr_len_t = self.heap[len_addr]
 
                         if expr_len_t.tag != Type.INT:
@@ -242,8 +248,8 @@ class Evaluator:
                         expr_len = int(expr_len_t.what)
 
                         # Get the address of the code itself.
-                        addr = len_addr + 1
-                        code = self.heap[addr : addr + expr_len]
+                        code_addr = len_addr + 1
+                        code = self.heap[code_addr : code_addr + expr_len]
                         self.stream.prepend(*code)
 
                         acc = self.expression(Precedence.NONE)
