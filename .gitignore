@@ -11,3 +11,4 @@ wheels/
 
 # Miscellaneous
 *.org
+/notes.org_archive
