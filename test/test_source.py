@@ -1,18 +1,18 @@
-import math
-
 import pytest
 
 from pratt_calc.evaluator import Evaluator
 
 examples = [
-    ("test/source.txt", 20),
-    ("test/source_comments.txt", 15),
+    ("test/source.txt", ["20"]),
+    ("test/source_comments.txt", ["10", "15"]),
 ]
 
 
-@pytest.mark.parametrize("filename, value", examples)
-def test_examples(filename: str, value: int | float):
+@pytest.mark.parametrize("filename, lines", examples)
+def test_examples(filename: str, lines: list[str], capsys: pytest.CaptureFixture[str]):
     ev = Evaluator()
-    result = ev.evaluate_file(filename)
+    _ = ev.evaluate_file(filename)
 
-    assert math.isclose(result, value, abs_tol=1e-10)
+    output = capsys.readouterr().out.splitlines()
+
+    assert output == lines

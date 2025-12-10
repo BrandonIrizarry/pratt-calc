@@ -160,7 +160,7 @@ class Evaluator:
                 acc = self.dealias(current.what)
 
             case Type.EOF:
-                raise ValueError("Invalid eof")
+                acc = 0
 
             case Type.ERROR:
                 raise ValueError(f"Invalid token: '{current}'")
