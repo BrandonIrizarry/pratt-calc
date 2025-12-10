@@ -63,6 +63,7 @@ class Op(SimpleNamespace):
     quote = Token(Type.OPERATOR, "{")
     endquote = Token(Type.OPERATOR, "}")
     call = Token(Type.OPERATOR, "call")
+    string = Token(Type.OPERATOR, '"')
 
 
 @final
@@ -120,7 +121,7 @@ def tokenize(raw_expression: str) -> Generator[Token]:
         ("NUMBER", r"\d+(\.\d*)?"),
         (
             "OPERATOR",
-            r"pi|sin|cos|tan|sec|csc|cot|print|call|<-|[-+*/!()^;@{}]",
+            r"pi|sin|cos|tan|sec|csc|cot|print|call|<-|[-+*/!()^;@{}\"]",
         ),
         ("IDENTIFIER", r"[a-zA-Z_][\w]*"),
         ("SKIP", r"[ \t]+"),

@@ -257,6 +257,19 @@ class Evaluator:
                         # in place of newlines.
                         acc = self.expression(Precedence.NONE)
 
+                    case Op.string:
+                        start = len(self.heap)
+                        expr: list[Token] = []
+
+                        while (t := next(self.stream)) != Op.string:
+                            expr.append(t)
+
+                        self.heap.append(Internal.string)
+                        self.heap.append(Token(Type.INT, str(len(expr))))
+                        self.heap.extend(expr)
+
+                        acc = start
+
                     case _ as nonexistent:
                         raise ValueError(f"Invalid nud: '{nonexistent}'")
 
