@@ -15,6 +15,10 @@ class Register:
     alias: str
     value: int | float
 
+    @override
+    def __str__(self):
+        return f"({self.alias} {self.value})"
+
 
 class Precedence(enum.IntEnum):
     """Establish the various precedence levels.
