@@ -5,15 +5,22 @@ import math
 import pathlib
 from collections import UserDict
 from dataclasses import dataclass
-from typing import final, override
+from typing import ClassVar, final, override
 
 from pratt_calc.tokenizer import Internal, Op, Token, Type, tokenize
 
 
 @dataclass
 class Register:
+    pseudo_index: ClassVar[int] = 0
     alias: str
     value: int | float
+
+    @classmethod
+    def new_pseudo_index(cls) -> int:
+        cls.pseudo_index += 1
+
+        return cls.pseudo_index
 
 
 class Precedence(enum.IntEnum):
@@ -295,6 +302,20 @@ class Evaluator:
                         self.heap.extend(string_expr)
 
                         acc = start
+
+                    case Op.strcast:
+                        value = self.expression(Precedence.UNARY)
+                        addr = len(self.heap)
+
+                        self.heap.append(Internal.string)
+                        self.heap.append(Token(Type.INT, "1"))
+                        self.heap.append(Token(Type.INT, f"{value}"))
+
+                        pseudo_local = Register(f"_{Register.new_pseudo_index()}", addr)
+                        self.registers.append(pseudo_local)
+
+                        # This part is crucial.
+                        acc = len(self.registers) - 1
 
                     case _ as nonexistent:
                         raise ValueError(f"Invalid nud: '{nonexistent}'")
