@@ -2,8 +2,10 @@ x <- 1
 
 block <- { x { print("hello") } ; (x - 1) { print("goodbye") } }
 
+/* This should only print "hello". */
 call block
 
 x <- x - 1
 
+/* This should only print "goodbye." */
 call block
