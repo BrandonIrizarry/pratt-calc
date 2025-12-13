@@ -1,0 +1,9 @@
+x <- 1
+
+block <- { x { print("hello") } ; (x - 1) { print("goodbye") } }
+
+call block
+
+x <- x - 1
+
+call block
