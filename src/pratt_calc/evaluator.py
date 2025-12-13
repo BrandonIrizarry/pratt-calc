@@ -147,6 +147,24 @@ class Evaluator:
 
         return len(self.registers) - 1
 
+    def _call(self) -> int | float:
+        type_addr = int(self.expression(Precedence.UNARY))
+        type_t = self.heap[type_addr]
+
+        if type_t != Internal.code:
+            raise ValueError(f"Illegal call-address: {type_addr}")
+
+        # Get the length address.
+        len_addr = type_addr + 1
+        code_len = int(self.heap[len_addr].what)
+
+        # Get the code address.
+        code_addr = len_addr + 1
+        code = self.heap[code_addr : code_addr + code_len]
+        self.stream.prepend(*code)
+
+        return self.expression(Precedence.NONE)
+
     def expression(self, level: int = Precedence.NONE) -> int | float:
         """Pratt-parse an arithmetic expression, evaluating it."""
 
@@ -259,22 +277,7 @@ class Evaluator:
                         acc = start
 
                     case Op.call:
-                        type_addr = int(self.expression(Precedence.UNARY))
-                        type_t = self.heap[type_addr]
-
-                        if type_t != Internal.code:
-                            raise ValueError(f"Illegal call-address: {type_addr}")
-
-                        # Get the length address.
-                        len_addr = type_addr + 1
-                        code_len = int(self.heap[len_addr].what)
-
-                        # Get the code address.
-                        code_addr = len_addr + 1
-                        code = self.heap[code_addr : code_addr + code_len]
-                        self.stream.prepend(*code)
-
-                        acc = self.expression(Precedence.NONE)
+                        acc = self._call()
 
                     case Op.semicolon:
                         # As a nud, ';' is a no-op. This lets users
