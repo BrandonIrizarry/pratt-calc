@@ -379,8 +379,6 @@ class Evaluator:
                     flag = acc
 
                     if flag != 0:
-                        print("Will execute!")
-
                         type_addr = int(self._quote())
                         acc = self._call(type_addr)
 
