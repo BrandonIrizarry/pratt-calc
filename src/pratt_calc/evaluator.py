@@ -148,6 +148,8 @@ class Evaluator:
         return len(self.registers) - 1
 
     def _call(self) -> int | float:
+        """Logic corresponding to 'call' token."""
+
         type_addr = int(self.expression(Precedence.UNARY))
         type_t = self.heap[type_addr]
 
@@ -164,6 +166,39 @@ class Evaluator:
         self.stream.prepend(*code)
 
         return self.expression(Precedence.NONE)
+
+    def _quote(self) -> int | float:
+        """Logic corresponding to 'quote' token."""
+
+        # Note that this case doesn't call
+        # 'expression': it flatly consumes the next
+        # series of tokens until '}' is seen.
+        start = len(self.heap)
+        code_expr: list[Token] = []
+
+        quote_stack = 1
+
+        while True:
+            t = next(self.stream)
+
+            if t == Op.quote:
+                quote_stack += 1
+                code_expr.append(t)
+            elif t == Op.endquote:
+                quote_stack -= 1
+
+                if quote_stack == 0:
+                    break
+                else:
+                    code_expr.append(t)
+            else:
+                code_expr.append(t)
+
+        self.heap.append(Internal.code)
+        self.heap.append(Token(Type.INT, str(len(code_expr))))
+        self.heap.extend(code_expr)
+
+        return start
 
     def expression(self, level: int = Precedence.NONE) -> int | float:
         """Pratt-parse an arithmetic expression, evaluating it."""
@@ -246,35 +281,7 @@ class Evaluator:
                         acc = self.expression(Precedence.NONE)
 
                     case Op.quote:
-                        # Note that this case doesn't call
-                        # 'expression': it flatly consumes the next
-                        # series of tokens until '}' is seen.
-                        start = len(self.heap)
-                        code_expr: list[Token] = []
-
-                        quote_stack = 1
-
-                        while True:
-                            t = next(self.stream)
-
-                            if t == Op.quote:
-                                quote_stack += 1
-                                code_expr.append(t)
-                            elif t == Op.endquote:
-                                quote_stack -= 1
-
-                                if quote_stack == 0:
-                                    break
-                                else:
-                                    code_expr.append(t)
-                            else:
-                                code_expr.append(t)
-
-                        self.heap.append(Internal.code)
-                        self.heap.append(Token(Type.INT, str(len(code_expr))))
-                        self.heap.extend(code_expr)
-
-                        acc = start
+                        acc = self._quote()
 
                     case Op.call:
                         acc = self._call()
