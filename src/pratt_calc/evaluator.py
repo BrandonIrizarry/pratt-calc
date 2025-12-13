@@ -36,6 +36,7 @@ class Precedence(enum.IntEnum):
     NONE = enum.auto()
     SEMICOLON = enum.auto()
     ASSIGNMENT = enum.auto()
+    CONDITIONAL = enum.auto()
     PLUS_MINUS = enum.auto()
     TIMES_DIVIDE = enum.auto()
     POWER = enum.auto()
@@ -85,6 +86,7 @@ class Evaluator:
             Op.factorial: Precedence.FACTORIAL,
             Op.semicolon: Precedence.SEMICOLON,
             Op.assign: Precedence.ASSIGNMENT,
+            Op.quote: Precedence.CONDITIONAL,
         }
     )
 
@@ -372,6 +374,20 @@ class Evaluator:
                     # Set the current result to 'right_hand_side',
                     # like with Lisp's 'setq'.
                     acc = right_hand_side
+
+                case Op.quote:
+                    # Conditional execution.
+                    flag = acc
+
+                    if flag != 0:
+                        print("Will execute!")
+
+                        type_addr = int(self._quote())
+                        acc = self._call(type_addr)
+
+                    else:
+                        self.stream.prepend(Op.quote)
+                        acc = self.expression()
 
                 case _ as token:
                     raise ValueError(f"Invalid led: {token}")
