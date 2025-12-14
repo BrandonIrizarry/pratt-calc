@@ -1,3 +1,32 @@
+# Table of Contents
+<a id="introduction"></a>
++ [Introduction](#introduction)
++ [Requirements](#requirements)
++ [Installation](#installation)
++ [pip](#pip)
++ [pipx (recommended)](#pipx-(recommended))
++ [Contributing](#contributing)
++ [Usage](#usage)
++ [REPL](#repl)
++ [Loading a file](#loading-a-file)
++ [Evaluating an expression on the fly](#evaluating-an-expression-on-the-fly)
++ [Combining switches](#combining-switches)
++ [Arithmetic](#arithmetic)
++ [Trigonometric Functions](#trigonometric-functions)
++ [A Note on the Implementation of Trig Functions](#a-note-on-the-implementation-of-trig-functions)
++ [Semicolons](#semicolons)
++ [Variables](#variables)
++ [Comments](#comments)
++ [Quoted Expressions](#quoted-expressions)
++ [Strings](#strings)
++ [Conditionals](#conditionals)
++ [Ideas](#ideas)
++ [A Note on Libraries Used](#a-note-on-libraries-used)
++ [The Pratt Parsing Algorithm](#the-pratt-parsing-algorithm)
++ [More Thoughts](#more-thoughts)
+
+
+<a id="introduction"></a>
 # Introduction
 
 An arithmetic expression calculator in Python, demoing the Pratt
@@ -13,18 +42,22 @@ well as a few other sources:
 I also have [some notes](#the-pratt-parsing-algorithm) at the end of this document which go into
 some detail over how the Pratt parsing machinery works.
 
+<a id="requirements"></a>
 # Requirements
 
 Requires Python 3.13 or greater.
 
+<a id="installation"></a>
 # Installation
 
+<a id="pip"></a>
 ## pip
 
 Set up and activate a virtual environment, then:
 
 `pip install pratt-calc`
 
+<a id="pipx-(recommended)"></a>
 ## pipx (recommended)
 
 Using `pipx` enables you to globally install the application without
@@ -41,6 +74,7 @@ Or, if you have `uv` installed:
 
 `uvx pipx install pratt-calc`
 
+<a id="contributing"></a>
 # Contributing
 
 Install `uv`, then run:
@@ -50,7 +84,7 @@ git clone https://github.com/BrandonIrizarry/pratt-calc
 cd pratt-calc
 uv sync --locked
 ```
-
+<a id="usage"></a>
 # Usage
 
 Pratt Calc supports three modes of usage:
@@ -63,7 +97,7 @@ Also see
 
 `pratt-calc --help`
 
-
+<a id="repl"></a>
 ## REPL
 
 To launch the REPL:
@@ -72,12 +106,14 @@ To launch the REPL:
 
 Use the `exit` command (or `Ctrl+D`) to quit the REPL.
 
+<a id="loading-a-file"></a>
 ## Loading a file
 
 To execute the contents of a file:
 
 `pratt-calc FILENAME`
 
+<a id="evaluating-an-expression-on-the-fly"></a>
 ## Evaluating an expression on the fly
 
 To evaluate a one-off expression:
@@ -91,14 +127,16 @@ the shell from expanding `*` and so on. Example:
 
 This should print `-17` at the console.
 
-## Combining switches (the `-i` flag)
+<a id="combining-switches"></a><a id="combining-switches"></a>
+## Combining switches
 
 If neither a filename argument nor `-e` are provided, the REPL will
 launch. Conversely, if either one is present, the REPL will not
 launch. However, you can use `-i` to force the REPL to launch in such
 a case.
 
-# Basic Arithmetic
+<a id="arithmetic"></a>
+## Arithmetic
 
 Pratt Calc is at its most basic level an arithmetic expression
 calculator over integers and floats. It currently supports `+`, `-`,
@@ -114,23 +152,8 @@ Parentheses are used to enforce precedence, viz.,
 
 `pratt-calc -e '(3 + 5) * 2'` => `16`
 
-## Semicolons
-
-Semicolons enable side-effect-based programming, which currently are a
-work in progress. For now, semicolons discard the result of whatever
-is to the left of them:
-
-`pratt-calc -e '3 + 3 ; 3 * 3; 3 ^ 3'` => `27.0`
-
-That is, the result of the above expression is simply the value of the
-last subexpression, namely, `3 ^ 3`.
-
-Note: for now, semicolons can't *terminate* an expression, since
-they're technically infix operators, and thus require a right-hand
-argument! I have some ideas for workarounds, but I'm not focused on
-that right now.
-
-# Trigonometric Functions
+<a id="trigonometric-functions"></a>
+## Trigonometric Functions
 
 `pratt-calc` supports the following trigonometric functions:
 
@@ -149,6 +172,7 @@ The constant 𝝿 is also available as `pi`. Examples:
 
 `pratt-calc -e 'sin(1)^2 + cos(1)^2'` => `1.0`
 
+<a id="a-note-on-the-implementation-of-trig-functions"></a>
 ## A Note on the Implementation of Trig Functions
 
 Trig functions are implemented as unary operators, as opposed to
@@ -165,16 +189,145 @@ This evaluates to `1.0`.
 
 For this reason, parentheses in this case are always recommended.
 
+<a id="semicolons"></a>
+## Semicolons
+
+Semicolons enable side-effect-based programming, which currently are a
+work in progress. For now, semicolons discard the result of whatever
+is to the left of them:
+
+`pratt-calc -e '3 + 3 ; 3 * 3; 3 ^ 3'` => `27.0`
+
+That is, the result of the above expression is simply the value of the
+last subexpression, namely, `3 ^ 3`.
+
+Within source files, semicolons are optional, since newlines are
+converted to semicolons in a preprocessing step. This means, however,
+that semicolons are still needed for multiple expressions occuring on
+the same line.
+<a id="variables"></a>
+## Variables
+
+Arithmetic expressions can be assigned to variables using `<-`. Note
+that the assignment operator binds more tightly than semicolon.
+
+`pratt-calc -e 'alice <- 3; bob <- 4; alice + bob` => `7`
+<a id="comments"></a>
+## Comments
+
+Comments (mainly useful in source files) are delimited using `/* */`.
+<a id="quoted-expressions"></a>
+## Quoted Expressions
+
+Expressions can be saved for later execution using quoted expressions
+delimited with curly braces (`{}`). Expressions are saved in a linear
+buffer called the *heap*. The heap stores the same kinds of tokens
+that are fed into the evaluator. Saving tokens into the heap in this
+manner is referred to as *compilation* (my own terminology, though
+this is vaugely inspired from Forth.)
+
+User code can access objects stored in the heap using the numeric
+address of that object. Assume the following is found in a file
+"triangle.txt":
+
+```
+/* Triangle stores the _address_ of the quoted expression. *./
+
+triangle <- {1 + 2 + 3 + 4}
+
+/* 'call' then executes the quoted expression at the given address;
+and so we should se '10' printed as the result. */
+
+call triangle
+
+```
+
+<a id="strings"></a>
+## Strings
+
+Strings in Pratt Calc are handled similarly as with quoted
+expressions: their content is saved in the heap for later use, while
+the currently executing code sees a numeric handle to the string. This
+style of implementation, unfortunately, requires a casting operation
+(the `str` unary operator) whenever we want to print a number to the
+console as a string:
+
+```
+message <- "hello"
+
+/* Prints "hello" to the console. */
+print(message)
+
+mistake <- 0
+
+/* Won't work, unless a string is stored at address 0 */
+print(mistake)
+
+/* This WILL work, printing "0" at the console. */
+print(str mistake) 
+```
+
+`str` compiles a string into the heap, then returns the string's
+address so that `print` will handle it properly.
+<a id="conditionals"></a>
+## Conditionals
+
+There is currently a simple mechanism for conditionally evaluating
+quoted expressions. The following example is taken directly from the
+tests:
+
+```
+x <- 1
+
+block <- { x { print("hello") } ; (x - 1) { print("goodbye") } }
+
+/* This should only print "hello". */
+call block
+
+x <- x - 1
+
+/* This should only print "goodbye." */
+call block
+```
+
+Note the use of nested quoted expressions (which I call "blocks"
+here.) I was able to give a `led` action to `{` (see [below](#the-pratt-parsing-algorithm)) such
+that the current accumulated result is available as a boolean flag: 0
+for false, and anything else for true. This operation binds more
+tightly than any other, and so parentheses are usually required when
+using it, as you can see in the above code excerpt.
+
+<a id="ideas"></a>
+# Ideas
+
+Currently, time prohibits me from expanding on this project any
+further for now. However, I had at least a few ideas for expanding on
+the project.
+
+One idea is for operators to work on tokens directly, instead of int
+or float values. Currently, the evaluator constantly forwards the
+current running result as an int or float down the stream of
+tokens. However, this causes problems when, for example,
+disambiguating a simple arithmetic result from a heap address. This
+then requires casting numbers into strings before printing them. It
+also complicates implementing conditional expressions in a sane
+manner. A token would otherwise carry its *type* with it, and now we'd
+have a simple duck-typing mechanism: `print` could act on whether its
+argument was a string (dereference) or else a number (print directly.)
+Conditionals would expect a BOOL token, which could be internally
+generated by a user-provided boolean operator. Also, arithmetic
+expressions could prohibit, say, adding a simple number to a heap
+address.
+
+<a id="a-note-on-libraries-used"></a>
 # A Note on Libraries Used
 
-Pratt Calc, as a command-line app, is built using
-[Typer](https://typer.tiangolo.com/).
+Pratt Calc, as a command-line app, is built using [Typer](https://typer.tiangolo.com/).
 
-It also uses the
-[more-itertools](https://more-itertools.readthedocs.io/en/stable/)
-library to implement the token stream used to drive expression
-evaluation.
+It also uses the [more-itertools](https://more-itertools.readthedocs.io/en/stable/) library to implement the token
+stream used to drive expression evaluation.
 
+<a id="the-pratt-parsing-algorithm"></a>
 # The Pratt Parsing Algorithm
 
 I'm including these notes in case they may be of help to anyone trying
@@ -193,11 +346,11 @@ literal result.
 ```
 parse(level):
     t ← next(stream)
-    acc ← nud_dispatch(t)                           # Calls 'parse' recursively.
+    acc ← nud_dispatch(t)                           // Calls 'parse' recursively.
 
     while level < precedence(peek(stream)):
         t ← next(stream)
-        acc ← led_dispatch(t, acc)                  # Calls 'parse' recursively.
+        acc ← led_dispatch(t, acc)                  // Calls 'parse' recursively.
 
     return acc
 
@@ -392,6 +545,7 @@ Without further ado:
   construction never has higher precedence than any other token, we
   exit the loop and return `12` as our final answer.
 
+<a id="more-thoughts"></a>
 ## More Thoughts
 
 Writing the above trace-through example actually made me realize a few
