@@ -43,7 +43,7 @@ def app():
                 print(ev.evaluate_file(filename))
             except Exception as e:
                 print(e)
-                raise typer.Abort()
+                raise typer.Abort() from e
 
         launch_repl = interactive or (filename == "" and exp == "")
 

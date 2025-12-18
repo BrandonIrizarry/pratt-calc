@@ -58,8 +58,8 @@ class LedPrecedenceTable(UserDict[Token, Precedence]):
     def __getitem__(self, token: Token):
         try:
             return self.data[token]
-        except KeyError:
-            raise ValueError(f"Led does not exist in table: '{token}'")
+        except KeyError as e:
+            raise ValueError(f"Led does not exist in table: '{token}'") from e
 
 
 @final
