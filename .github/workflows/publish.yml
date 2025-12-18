@@ -15,8 +15,6 @@ jobs:
     needs: ci-build
     runs-on: ubuntu-latest
 
-    if: contains(github.ref_name, 'rc') || contains(github.ref_name, 'a') || contains(github.ref_name, 'b')
-
     environment:
       name: testpypi
       url: https://test.pypi.org/p/pratt-calc
@@ -38,11 +36,6 @@ jobs:
   publish-pypi:
     needs: ci-build
     runs-on: ubuntu-latest
-
-    if: |
-      !contains(github.ref_name, 'rc') &&
-      !contains(github.ref_name, 'a') &&
-      !contains(github.ref_name, 'b')
 
     environment:
       name: pypi
