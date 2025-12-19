@@ -24,6 +24,11 @@ jobs:
       contents: read
 
     steps:
+      # Check out the repo, so that we have access to the testpypi
+      # index mentioned in our pyproject.toml file.
+      - name: Checkout
+        uses: actions/checkout@v5
+
       - uses: actions/download-artifact@v4
         with:
           name: python-package-distributions
